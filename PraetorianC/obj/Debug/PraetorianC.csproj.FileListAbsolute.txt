@@ -1,0 +1,9 @@
+C:\Users\User\Desktop\Pretorian(курсач)\Praetorian-PC-client\PraetorianC\PraetorianC\bin\Debug\PraetorianC.exe.config
+C:\Users\User\Desktop\Pretorian(курсач)\Praetorian-PC-client\PraetorianC\PraetorianC\bin\Debug\PraetorianC.exe
+C:\Users\User\Desktop\Pretorian(курсач)\Praetorian-PC-client\PraetorianC\PraetorianC\bin\Debug\PraetorianC.pdb
+C:\Users\User\Desktop\Pretorian(курсач)\Praetorian-PC-client\PraetorianC\PraetorianC\obj\Debug\PraetorianC.csprojResolveAssemblyReference.cache
+C:\Users\User\Desktop\Pretorian(курсач)\Praetorian-PC-client\PraetorianC\PraetorianC\obj\Debug\PraetorianC.Form1.resources
+C:\Users\User\Desktop\Pretorian(курсач)\Praetorian-PC-client\PraetorianC\PraetorianC\obj\Debug\PraetorianC.Properties.Resources.resources
+C:\Users\User\Desktop\Pretorian(курсач)\Praetorian-PC-client\PraetorianC\PraetorianC\obj\Debug\PraetorianC.csproj.GenerateResource.Cache
+C:\Users\User\Desktop\Pretorian(курсач)\Praetorian-PC-client\PraetorianC\PraetorianC\obj\Debug\PraetorianC.exe
+C:\Users\User\Desktop\Pretorian(курсач)\Praetorian-PC-client\PraetorianC\PraetorianC\obj\Debug\PraetorianC.pdb
