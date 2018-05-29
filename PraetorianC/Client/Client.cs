@@ -8,6 +8,7 @@ using System.Net.Sockets;
 using System.Windows.Forms;
 using PraetorianC.Commands;
 using System.IO;
+using System.Security.Cryptography;
 
 namespace PraetorianC.Client
 {
@@ -53,6 +54,20 @@ namespace PraetorianC.Client
             stream.WriteByte((byte)command);
             stream.Write(convertedlength, 0, convertedlength.Length);
             stream.Write(convertedData, 0, data.Length);
+            //Получение ответа от сервера
+            byte[] answer = new byte[1];
+            if (client.Available != 0)
+            {
+                stream.Read(answer, 0, 1);
+                if (answer[0] == (byte)AppComands.ServerAnswers.OK)
+                {
+                    MessageBox.Show("Вы успешно зарегестрированы", "Ошибка", MessageBoxButtons.OK);
+                }
+                else
+                {
+                    MessageBox.Show("Ошибка регистрации", "Ошибка", MessageBoxButtons.OK);
+                }
+            }
         }
 
 
