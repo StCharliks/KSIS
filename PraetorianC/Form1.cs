@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using PraetorianC.Client;
 using PraetorianC.Commands;
@@ -20,7 +13,7 @@ namespace PraetorianC
         public Form1()
         {
             InitializeComponent();
-            connection.setConncetion(8888, "127.0.0.1");
+            connection.setConncetion(8080, "192.168.43.44");
             //client.Authorised = true;
         }
 
@@ -39,7 +32,7 @@ namespace PraetorianC
             String login = loginBox.Text;
             String password = passwordBox.Text;
             //connection.setConncetion(8888, "127.0.0.1");
-            client.Authorised = connection.Auth(AppComands.ClientCommands.AUTH, login +" " + password);
+            client.Authorised = connection.Auth(AppComands.ClientCommands.AUTH, login, password);
         }
 
         private void reg_button_Click(object sender, EventArgs e)
@@ -47,10 +40,15 @@ namespace PraetorianC
             String login = loginBox.Text;
             String password = passwordBox.Text;
 
-            connection.Reg(AppComands.ClientCommands.REG, login + " " + password);
+            connection.Reg(AppComands.ClientCommands.REG, login, password);
         }
 
         private void FileNameBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void load_button_Click(object sender, EventArgs e)
         {
 
         }

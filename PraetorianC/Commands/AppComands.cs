@@ -8,7 +8,7 @@ namespace PraetorianC.Commands
 {
     abstract class AppComands
     {
-        public enum ClientCommands { LOAD, REG, AUTH, CONNECT, PUSH };
+        public enum ClientCommands { LOAD, REG, SEND ,AUTH, CONNECT};
         public enum ServerAnswers { OK, NOPE};
     }
 }

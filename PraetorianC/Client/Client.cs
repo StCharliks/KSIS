@@ -9,18 +9,25 @@ using System.Windows.Forms;
 using PraetorianC.Commands;
 using System.IO;
 using System.Security.Cryptography;
+using Server.Security;
 
 namespace PraetorianC.Client
 {
     class Connection
     {
+        #region FIELDS
         private TcpClient client = null;
         private String IP;
         private int socket;
         public NetworkStream stream = null;
+        private AES_DiffieHellman AES = new AES_DiffieHellman();
+        #endregion 
 
+        #region CONSTRUCTORS
         public Connection() { }
+        #endregion
 
+        #region METHODS
 
         public void setConncetion(int socket, String IP)
         {
@@ -39,67 +46,145 @@ namespace PraetorianC.Client
         }
 
 
-        public void Reg(Commands.AppComands.ClientCommands command, String data)
+        public void Reg(Commands.AppComands.ClientCommands command, String login, String password)
         {
             if (stream == null)
             {
                 MessageBox.Show("Отсутствует соединение с сервером", "Ошибка", MessageBoxButtons.OK);
                 return;
             }
-            //подготовка данных
-            ulong length = (ulong)data.Length;
-            byte[] convertedData = Encoding.Default.GetBytes(data);
-            byte[] convertedlength = BitConverter.GetBytes(length);
-            //Отправка данныъ
-            stream.WriteByte((byte)command);
-            stream.Write(convertedlength, 0, convertedlength.Length);
-            stream.Write(convertedData, 0, data.Length);
-            //Получение ответа от сервера
-            byte[] answer = new byte[1];
-            if (client.Available != 0)
+
+            try
             {
-                stream.Read(answer, 0, 1);
-                if (answer[0] == (byte)AppComands.ServerAnswers.OK)
-                {
-                    MessageBox.Show("Вы успешно зарегестрированы", "Ошибка", MessageBoxButtons.OK);
-                }
-                else
-                {
-                    MessageBox.Show("Ошибка регистрации", "Ошибка", MessageBoxButtons.OK);
-                }
+                SHA256 SHA = SHA256Managed.Create();
+                //подготовка к отправке логина
+                byte[] convertedData = SHA.ComputeHash(Encoding.Default.GetBytes(login));
+                ulong length = (ulong)convertedData.Length;
+                byte[] convertedlength = BitConverter.GetBytes(length);
+                //Отправка логина
+                stream.WriteByte((byte)command);
+                stream.Write(convertedlength, 0, convertedlength.Length);
+                stream.Write(convertedData, 0, convertedData.Length);
+                //подготовка к отправке пароля
+                convertedData = SHA.ComputeHash(Encoding.Default.GetBytes(password));
+                length = (ulong)convertedData.Length;
+                convertedlength = BitConverter.GetBytes(length);
+                //отправка пароля
+                stream.Write(convertedlength, 0, convertedlength.Length);
+                stream.Write(convertedData, 0, convertedData.Length);
+                //Получение ответа от сервера
+                byte[] answer = new byte[1];
+                
+                    stream.Read(answer, 0, 1);
+                    if (answer[0] == (byte)AppComands.ServerAnswers.OK)
+                    {
+                        MessageBox.Show("Вы успешно зарегестрированы", "Praetorian", MessageBoxButtons.OK);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Ошибка регистрации", "Ошибка", MessageBoxButtons.OK);
+                    }
+                
+            } catch(Exception error)
+            {
+                MessageBox.Show("Неожиданно разорвалось соединение", "Ошибка", MessageBoxButtons.OK);
             }
         }
 
 
-        public bool Auth(Commands.AppComands.ClientCommands command, String data)
+        public bool Auth(Commands.AppComands.ClientCommands command, String login, String password)
         {
+            AES.GetSecretKey(new byte[140], new byte[16]);
             if (stream == null)
             {
                 MessageBox.Show("Отсутствует соединение с сервером", "Ошибка", MessageBoxButtons.OK);
                 return false;
             }
-            //подготовка данных
-            ulong length = (ulong)data.Length;
-            byte[] convertedData = Encoding.Default.GetBytes(data);
-            byte[] convertedlength = BitConverter.GetBytes(length);
-            //Отправка данныъ
-            stream.WriteByte((byte)command);
-            stream.Write(convertedlength, 0, convertedlength.Length);
-            stream.Write(convertedData, 0, data.Length);
-            //Приём ответа от сервера
-            byte[] answer = new byte[1];
-            //stream.ReadTimeout = 1000;
-            stream.Read(answer, 0, 1);
-            if (answer[0] == (byte)Commands.AppComands.ServerAnswers.OK)
+            SHA256 SHA = SHA256Managed.Create();
+
+            try
             {
-                MessageBox.Show("Авторизация успешна", "", MessageBoxButtons.OK);
-                return true;
-            }
-            else
+                //подготовка к отправке логина
+                byte[] convertedData = SHA.ComputeHash(Encoding.Default.GetBytes(login));
+                ulong length = (ulong)convertedData.Length;
+                byte[] convertedlength = BitConverter.GetBytes(length);
+                //Отправка логина
+                stream.WriteByte((byte)command);
+                stream.Write(convertedlength, 0, convertedlength.Length);
+                stream.Write(convertedData, 0, convertedData.Length);
+                //подготовка к отправке пароля
+                convertedData = SHA.ComputeHash(Encoding.Default.GetBytes(password));
+                length = (ulong)convertedData.Length;
+                convertedlength = BitConverter.GetBytes(length);
+                //отправка пароля
+                stream.Write(convertedlength, 0, convertedlength.Length);
+                stream.Write(convertedData, 0, convertedData.Length);
+                //Приём ответа от сервера
+                byte[] answer = new byte[1];
+                //stream.ReadTimeout = 1000;
+                stream.Read(answer, 0, 1);
+                if (answer[0] == (byte)Commands.AppComands.ServerAnswers.OK)
+                {
+                    //MessageBox.Show("Авторизация успешна", "", MessageBoxButtons.OK);
+                        //byte[] convertedData = null;
+                        //ulong length = 0;
+                        //Получаем длину ключа и ключ
+                        convertedData = new byte[sizeof(ulong)];
+                        stream.Read(convertedData, 0, sizeof(ulong));
+                        length = BitConverter.ToUInt64(convertedData, 0);
+                        //ключ шифрования
+                        byte[] key = new byte[length];
+                        stream.Read(key, 0, key.Length);
+
+                        //Получаем длину потока инициализации и сам поток
+                        stream.Read(convertedData, 0, sizeof(ulong));
+                        length = BitConverter.ToUInt64(convertedData, 0);
+                        byte[] initStream = new byte[length];
+                        stream.Read(initStream, 0, initStream.Length);
+                        AES.GetSecretKey(key, initStream);
+                        //Отправка зашифрованных хешей
+                        //подготовка к отправке логина
+                        convertedData = SHA.ComputeHash(Encoding.Default.GetBytes(login));
+                        AES.Encrypt(ref convertedData);
+                        length = (ulong)convertedData.Length;
+                        convertedlength = BitConverter.GetBytes(length);
+                        //Отправка логина
+                        stream.WriteByte((byte)command);
+                        stream.Write(convertedlength, 0, convertedlength.Length);
+                        stream.Write(convertedData, 0, convertedData.Length);
+                        //подготовка к отправке пароля
+                        convertedData = SHA.ComputeHash(Encoding.Default.GetBytes(password));
+                        AES.Encrypt(ref convertedData);
+                        length = (ulong)convertedData.Length;
+                        convertedlength = BitConverter.GetBytes(length);
+                        //отправка пароля
+                        stream.Write(convertedlength, 0, convertedlength.Length);
+                        stream.Write(convertedData, 0, convertedData.Length);
+
+                        stream.Read(answer, 0, 1);
+                        if (answer[0] == (byte)Commands.AppComands.ServerAnswers.OK)
+                        {
+                            MessageBox.Show("Авторизация успешна", "", MessageBoxButtons.OK);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Ошибка второго этапа авторизации\n Вероятность попытки взлома", "", MessageBoxButtons.OK);
+                            return false;
+                        }
+
+                    
+                    return true;
+                }
+                else
+                {
+                    MessageBox.Show("Ошибка:\n Неверный логин или пароль", "", MessageBoxButtons.OK);
+                    return false;
+                }
+            }catch(Exception error)
             {
-                MessageBox.Show("Ошибка:\n Неверный логин или пароль", "", MessageBoxButtons.OK);
-                return false;
+                MessageBox.Show("Неожиданно разорвалось соединение", "", MessageBoxButtons.OK);
             }
+            return false;
         }
 
 
@@ -217,6 +302,9 @@ namespace PraetorianC.Client
                         MessageBox.Show(error.Message, "Ошибка", MessageBoxButtons.OK);
                     }
 
+                    //шифруем перед отправкой
+                    AES.Encrypt(ref convertedData);
+
                     convertedLength = BitConverter.GetBytes((ulong)convertedData.Length);
 
                     //Отправка второй порции данных
@@ -232,6 +320,8 @@ namespace PraetorianC.Client
                 MessageBox.Show("Пожалуйста авторизуйтесь", "Ошибка", MessageBoxButtons.OK);
             }
         }
+
+        #endregion
     }
 
     class Client

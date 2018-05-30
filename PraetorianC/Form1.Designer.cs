@@ -37,7 +37,7 @@
             this.passwordBox = new System.Windows.Forms.TextBox();
             this.loginBox = new System.Windows.Forms.TextBox();
             this.FileNameBox = new System.Windows.Forms.ListBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.load_button = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -119,14 +119,15 @@
             this.FileNameBox.TabIndex = 2;
             this.FileNameBox.SelectedIndexChanged += new System.EventHandler(this.FileNameBox_SelectedIndexChanged);
             // 
-            // button1
+            // load_button
             // 
-            this.button1.Location = new System.Drawing.Point(701, 379);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(200, 56);
-            this.button1.TabIndex = 3;
-            this.button1.Text = "Получить с сервера";
-            this.button1.UseVisualStyleBackColor = true;
+            this.load_button.Location = new System.Drawing.Point(701, 379);
+            this.load_button.Name = "load_button";
+            this.load_button.Size = new System.Drawing.Size(200, 56);
+            this.load_button.TabIndex = 3;
+            this.load_button.Text = "Получить с сервера";
+            this.load_button.UseVisualStyleBackColor = true;
+            this.load_button.Click += new System.EventHandler(this.load_button_Click);
             // 
             // label1
             // 
@@ -145,7 +146,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(943, 571);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.load_button);
             this.Controls.Add(this.FileNameBox);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.push_button);
@@ -170,7 +171,7 @@
         private System.Windows.Forms.TextBox loginBox;
         private System.Windows.Forms.Button reg_button;
         private System.Windows.Forms.ListBox FileNameBox;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button load_button;
         private System.Windows.Forms.Label label1;
     }
 }
