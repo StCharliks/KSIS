@@ -19,6 +19,11 @@ namespace PraetorianC
 
         private void push_button_Click(object sender, EventArgs e)
         {
+            if (!client.Authorised)
+            {
+                MessageBox.Show("Вы не авторизованы", "Ошибка", MessageBoxButtons.OK);
+                return;
+            }
             //connection.setConncetion(8888, "127.0.0.1");
             OpenFileDialog dialog = new OpenFileDialog();
             if (dialog.ShowDialog() == DialogResult.OK)
@@ -31,6 +36,8 @@ namespace PraetorianC
         {
             String login = loginBox.Text;
             String password = passwordBox.Text;
+            client.Password = password;
+            client.Login = login;
             //connection.setConncetion(8888, "127.0.0.1");
             client.Authorised = connection.Auth(AppComands.ClientCommands.AUTH, login, password);
         }
@@ -50,7 +57,34 @@ namespace PraetorianC
 
         private void load_button_Click(object sender, EventArgs e)
         {
+            if (!client.Authorised)
+            {
+                MessageBox.Show("Вы не авторизованы", "Ошибка", MessageBoxButtons.OK);
+                return;
+            }
+        }
 
+        private void reconnectButton_Click(object sender, EventArgs e)
+        {
+            if (connection.stream == null)
+            {
+                MessageBox.Show("После восстановления соединения необходмо переавторизоваться", "Ошибка", MessageBoxButtons.OK);
+                try
+                {
+                    connection.setConncetion(8080, "192.168.43.44");
+                } catch(Exception error)
+                {
+                    MessageBox.Show(error.Message, "Ошибка", MessageBoxButtons.OK);
+                }
+                finally
+                {
+                    client.Authorised = false;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Соединение уже установлено", "Ошибка", MessageBoxButtons.OK);
+            }
         }
     }
 }

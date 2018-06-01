@@ -10,6 +10,7 @@ using PraetorianC.Commands;
 using System.IO;
 using System.Security.Cryptography;
 using Server.Security;
+using ConsoleApplication2;
 
 namespace PraetorianC.Client
 {
@@ -20,7 +21,8 @@ namespace PraetorianC.Client
         private String IP;
         private int socket;
         public NetworkStream stream = null;
-        private AES_DiffieHellman AES = new AES_DiffieHellman();
+        //private AES_DiffieHellman AES = new AES_DiffieHellman();
+        private DIFFIE_HELMAN AES = new DIFFIE_HELMAN();
         #endregion 
 
         #region CONSTRUCTORS
@@ -28,6 +30,13 @@ namespace PraetorianC.Client
         #endregion
 
         #region METHODS
+
+        public void templateSend(AppComands.ClientCommands command, byte[] length, byte[] data, NetworkStream stream)
+        {
+            stream.WriteByte((byte)command);
+            stream.Write(length, 0, length.Length);
+            stream.Write(data, 0, data.Length);
+        }
 
         public void setConncetion(int socket, String IP)
         {
@@ -62,9 +71,10 @@ namespace PraetorianC.Client
                 ulong length = (ulong)convertedData.Length;
                 byte[] convertedlength = BitConverter.GetBytes(length);
                 //Отправка логина
-                stream.WriteByte((byte)command);
+                templateSend(command, convertedlength, convertedData, stream);
+                /*stream.WriteByte((byte)command);
                 stream.Write(convertedlength, 0, convertedlength.Length);
-                stream.Write(convertedData, 0, convertedData.Length);
+                stream.Write(convertedData, 0, convertedData.Length);*/
                 //подготовка к отправке пароля
                 convertedData = SHA.ComputeHash(Encoding.Default.GetBytes(password));
                 length = (ulong)convertedData.Length;
@@ -94,7 +104,7 @@ namespace PraetorianC.Client
 
         public bool Auth(Commands.AppComands.ClientCommands command, String login, String password)
         {
-            AES.GetSecretKey(new byte[140], new byte[16]);
+            //AES.GetSecretKey(new byte[140], new byte[16]);
             if (stream == null)
             {
                 MessageBox.Show("Отсутствует соединение с сервером", "Ошибка", MessageBoxButtons.OK);
@@ -109,9 +119,10 @@ namespace PraetorianC.Client
                 ulong length = (ulong)convertedData.Length;
                 byte[] convertedlength = BitConverter.GetBytes(length);
                 //Отправка логина
-                stream.WriteByte((byte)command);
+                templateSend(command, convertedlength, convertedData, stream);
+                /*stream.WriteByte((byte)command);
                 stream.Write(convertedlength, 0, convertedlength.Length);
-                stream.Write(convertedData, 0, convertedData.Length);
+                stream.Write(convertedData, 0, convertedData.Length);*/
                 //подготовка к отправке пароля
                 convertedData = SHA.ComputeHash(Encoding.Default.GetBytes(password));
                 length = (ulong)convertedData.Length;
@@ -137,24 +148,26 @@ namespace PraetorianC.Client
                         stream.Read(key, 0, key.Length);
 
                         //Получаем длину потока инициализации и сам поток
-                        stream.Read(convertedData, 0, sizeof(ulong));
+
+                        stream.Read(convertedData, 0, sizeof(ulong));//поток инициализации тут не нужен
                         length = BitConverter.ToUInt64(convertedData, 0);
                         byte[] initStream = new byte[length];
                         stream.Read(initStream, 0, initStream.Length);
-                        AES.GetSecretKey(key, initStream);
+                        AES.CreateSecretKey(key);
                         //Отправка зашифрованных хешей
                         //подготовка к отправке логина
                         convertedData = SHA.ComputeHash(Encoding.Default.GetBytes(login));
-                        AES.Encrypt(ref convertedData);
+                        convertedData = AES.Send(AES.secretKey, convertedData);
                         length = (ulong)convertedData.Length;
                         convertedlength = BitConverter.GetBytes(length);
-                        //Отправка логина
-                        stream.WriteByte((byte)command);
+                    //Отправка логина
+                        templateSend(command, convertedlength, convertedData, stream);
+                        /*stream.WriteByte((byte)command);
                         stream.Write(convertedlength, 0, convertedlength.Length);
-                        stream.Write(convertedData, 0, convertedData.Length);
+                        stream.Write(convertedData, 0, convertedData.Length);*/
                         //подготовка к отправке пароля
                         convertedData = SHA.ComputeHash(Encoding.Default.GetBytes(password));
-                        AES.Encrypt(ref convertedData);
+                        convertedData = AES.Send(AES.secretKey, convertedData);
                         length = (ulong)convertedData.Length;
                         convertedlength = BitConverter.GetBytes(length);
                         //отправка пароля
@@ -209,9 +222,10 @@ namespace PraetorianC.Client
                 //Отправка на сервер первой порции данных
                 if (stream != null)
                 {
-                    stream.WriteByte((byte)command);
+                    templateSend(command, convertedLength, convertedData, stream);
+                    /*stream.WriteByte((byte)command);
                     stream.Write(convertedLength, 0, convertedLength.Length);
-                    stream.Write(convertedData, 0, convertedData.Length);
+                    stream.Write(convertedData, 0, convertedData.Length);*/
                 }
                 else
                 {
@@ -280,9 +294,10 @@ namespace PraetorianC.Client
                     //Отправка на сервер первой порции данных
                     if (stream != null)
                     {
-                        stream.WriteByte((byte)command);
+                        templateSend(command, convertedLength, convertedData, stream);
+                        /*stream.WriteByte((byte)command);
                         stream.Write(convertedLength, 0, convertedLength.Length);
-                        stream.Write(convertedData, 0, convertedData.Length);
+                        stream.Write(convertedData, 0, convertedData.Length);*/
                     }
                     else
                     {
@@ -303,7 +318,7 @@ namespace PraetorianC.Client
                     }
 
                     //шифруем перед отправкой
-                    AES.Encrypt(ref convertedData);
+                    //AES.Encrypt(ref convertedData);
 
                     convertedLength = BitConverter.GetBytes((ulong)convertedData.Length);
 
@@ -329,7 +344,7 @@ namespace PraetorianC.Client
 
         #region FIELDS
 
-            private bool isAuthorised = false;
+            private bool isAuthorised = true;
             public bool Authorised
             {
                 set
@@ -359,7 +374,29 @@ namespace PraetorianC.Client
 
 
             private String login;
+            public String Login
+            {
+            get
+            {
+                return login;
+            }
+            set
+            {
+                login = value;
+            }
+            }
             private String password;
+            public String Password
+            {
+                get
+                {
+                    return password;
+                }
+                set
+                {
+                    password = value;
+                }
+            }
         #endregion
     }
 }

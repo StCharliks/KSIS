@@ -177,13 +177,16 @@ namespace Server.Security
 
     class AES_DiffieHellman
     {
+        #region FIEDS
         public byte[] PublicKey { get; private set; } //Ключ, передаваемый по сети для последующего получения секретного
         private byte[] Key;
         private ECDiffieHellmanCng server = new ECDiffieHellmanCng();
         public Aes aes { get; private set; }
         private byte[] Client_IV;
         private byte[] Own_IV;
+        #endregion
 
+        #region CONSTRUCTORS
         public AES_DiffieHellman()
         {
             this.aes = new AesCryptoServiceProvider();
@@ -193,7 +196,9 @@ namespace Server.Security
             server.HashAlgorithm = CngAlgorithm.Sha256;
             this.PublicKey = server.PublicKey.ToByteArray();
         }
+        #endregion
 
+        #region METHODS
         public void GetSecretKey(byte[] ClientPublicKey, byte[] iv)
         {
             this.Key = null;
@@ -241,33 +246,34 @@ namespace Server.Security
                 }
             }
         }
+        #endregion
 
-       /* public void KeysExchange(TcpClient client, NetworkStream networkStream, AES_DiffieHellman aes)
-        {
-            //Отправляем свой ключ
-            byte[] buf = new byte[aes.PublicKey.LongLength];
-            networkStream.Write(buf, 0, buf.Length);
-            networkStream.Write(aes.PublicKey, 0, aes.PublicKey.Length);
-            //Отправляем свой вектор инициализации
-            buf = new byte[aes.aes.IV.LongLength];
-            networkStream.Write(buf, 0, buf.Length);
-            networkStream.Write(aes.aes.IV, 0, aes.aes.IV.Length);
+        /* public void KeysExchange(TcpClient client, NetworkStream networkStream, AES_DiffieHellman aes)
+         {
+             //Отправляем свой ключ
+             byte[] buf = new byte[aes.PublicKey.LongLength];
+             networkStream.Write(buf, 0, buf.Length);
+             networkStream.Write(aes.PublicKey, 0, aes.PublicKey.Length);
+             //Отправляем свой вектор инициализации
+             buf = new byte[aes.aes.IV.LongLength];
+             networkStream.Write(buf, 0, buf.Length);
+             networkStream.Write(aes.aes.IV, 0, aes.aes.IV.Length);
 
-            while (client.Connected)
-            {
-                if (networkStream.DataAvailable)
-                {
-                    byte[] byffer = new byte[client.Available];
-                    buf = new byte[sizeof(ulong)];
-                    networkStream.Read(byffer, 0, byffer.Length);
+             while (client.Connected)
+             {
+                 if (networkStream.DataAvailable)
+                 {
+                     byte[] byffer = new byte[client.Available];
+                     buf = new byte[sizeof(ulong)];
+                     networkStream.Read(byffer, 0, byffer.Length);
 
-                    byte[] iv = new byte[sizeof(ulong)];
-                    networkStream.Read(iv, 0, iv.Length);
+                     byte[] iv = new byte[sizeof(ulong)];
+                     networkStream.Read(iv, 0, iv.Length);
 
-                    aes.GetSecretKey(buf, iv);
-                    return;
-                }
-            }
-        }*/
+                     aes.GetSecretKey(buf, iv);
+                     return;
+                 }
+             }
+         }*/
     }
 }

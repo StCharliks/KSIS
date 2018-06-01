@@ -31,6 +31,8 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.push_button = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.reg_button = new System.Windows.Forms.Button();
             this.logOut = new System.Windows.Forms.Button();
             this.signIn = new System.Windows.Forms.Button();
@@ -39,6 +41,7 @@
             this.FileNameBox = new System.Windows.Forms.ListBox();
             this.load_button = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
+            this.reconnectButton = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -55,6 +58,8 @@
             // panel1
             // 
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.label3);
+            this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.reg_button);
             this.panel1.Controls.Add(this.logOut);
             this.panel1.Controls.Add(this.signIn);
@@ -64,6 +69,24 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(238, 216);
             this.panel1.TabIndex = 1;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(95, 72);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(57, 17);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "Пароль";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(95, 14);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(47, 17);
+            this.label2.TabIndex = 5;
+            this.label2.Text = "Логин";
             // 
             // reg_button
             // 
@@ -140,11 +163,22 @@
             this.label1.TabIndex = 4;
             this.label1.Text = "Praetorian";
             // 
+            // reconnectButton
+            // 
+            this.reconnectButton.Location = new System.Drawing.Point(26, 21);
+            this.reconnectButton.Name = "reconnectButton";
+            this.reconnectButton.Size = new System.Drawing.Size(131, 70);
+            this.reconnectButton.TabIndex = 5;
+            this.reconnectButton.Text = "Восстановить соединение";
+            this.reconnectButton.UseVisualStyleBackColor = true;
+            this.reconnectButton.Click += new System.EventHandler(this.reconnectButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(943, 571);
+            this.Controls.Add(this.reconnectButton);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.load_button);
             this.Controls.Add(this.FileNameBox);
@@ -173,6 +207,9 @@
         private System.Windows.Forms.ListBox FileNameBox;
         private System.Windows.Forms.Button load_button;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button reconnectButton;
     }
 }
 
